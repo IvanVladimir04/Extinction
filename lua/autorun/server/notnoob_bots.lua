@@ -114,7 +114,7 @@ concommand.Add( "test_astar", function( ply )
 
 end )
 
-local EntList = {}
+EntList = {}
 
 local allies = {
 [CLASS_PLAYER_ALLY] = true,
@@ -122,20 +122,20 @@ local allies = {
 }
 
 hook.Add( "OnEntityCreated", "SoftBotEntList", function( ent )
-	if ( IsValid(ent) and ( ( ent:IsPlayer() and GetConVar("bot_attackplayers"):GetInt() == 1 ) or ( ent:IsNPC() and !allies[ent:Classify()] ) or ent.Type == "nextbot") ) then
+	if ( ( ( ent:IsPlayer() and GetConVar("bot_attackplayers"):GetInt() == 1 ) or ( ent:IsNPC() and !allies[ent:Classify()] ) or ent.Type == "nextbot") ) then
 		EntList[ ent:EntIndex() ] = ent
 	end
 end )
 
 hook.Add( "OnEntityRemoved", "RemoveBotEntList", function( ent )
-	EntList[ ent:EntIndex() ] = false
+	EntList[ ent:EntIndex() ] = nil
 end )
 
 local rePathDelay = 1 -- How many seconds need to pass before we need to remake the path to keep it updated
 
 function mystart(ply,cmd)
 	
-	if(ply:IsBot() and GetConVar( "bot_enabled" ):GetInt() >= 1) then
+	if (ply:IsBot() and GetConVar( "bot_enabled" ):GetInt() != 0) then
 	
 	distance = GetConVar( "bot_gundistance" ):GetInt()
 	resetconvar = GetConVar( "bot_resetconvar"):GetInt()
@@ -156,29 +156,33 @@ function mystart(ply,cmd)
 				ply:Give(GetConVar( "bot_weapon" ):GetString())
 				ply:SelectWeapon(GetConVar( "bot_weapon" ):GetString())
 				ply:GiveAmmo(9999,ply:GetActiveWeapon():GetPrimaryAmmoType())
-				ply:GiveAmmo(9999,ply:GetActiveWeapon():GetSecondaryAmmoType())
+				--ply:GiveAmmo(9999,ply:GetActiveWeapon():GetSecondaryAmmoType())
 			end
 		end)
 		if !IsValid(ply.Enemy) then
-		for index, v in pairs( EntList ) do
-			if v != ply and IsValid(v) and index != false then
-				if ply:GetPos():DistToSqr( v:GetPos() ) < distance^2 and v:Health() > 0 and v != ply then
-					ply.Enemy = v
+			for index, v in pairs( EntList ) do
+				if v != ply and IsValid(v) then
+					if v:Health() > 0 then
+						ply.Enemy = v
+					end
 				end
 			end
 		end
 		if IsValid(ply.Enemy) then
 		local v = ply.Enemy
-		if !ply.NextBotThink then ply.NextBotThink = CurTime()+1 end
+			if !ply.NextBotThink then ply.NextBotThink = CurTime()+1 end
 			if ply.NextBotThink < CurTime() then
-				if ply:IsLineOfSightClear(v) then
+				if ply:IsLineOfSightClear(v) and ply:GetPos():DistToSqr( v:GetPos() ) < distance^2 then
 					ply.Shoot = true
+				else
+					ply.Shoot = false
 				end
 				if ply:GetPos():DistToSqr(v:GetPos()) < GetConVar( "bot_backdistance" ):GetInt()^2 then
 					ply.Path = false
 				else
 					ply.Path = true
 				end
+				ply.NextBotThink = CurTime()+1
 			end
 				if ply.Shoot then
 					cmd:SetButtons(IN_ATTACK)
@@ -199,7 +203,6 @@ function mystart(ply,cmd)
 				end
 				ply:SetWalkSpeed(200)
 			end
-		end
 	end
 end
 

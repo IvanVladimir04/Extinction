@@ -29,6 +29,7 @@ ply:SetNWInt("playerLvl", 1)
 end
 
 function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
+	if ply:IsBot() then return end
 	if ( hitgroup == HITGROUP_HEAD ) then
 		dmginfo:ScaleDamage(0) 
  	else
@@ -37,15 +38,14 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
 end
 
 local pmtable = {
-	["models/player/combine_soldier.mdl"] = true,
-	["models/player/combine_super_soldier.mdl"] = true,
-	["models/player/police.mdl"] = true,
-	["models/player/combine_soldier_prisonguard.mdl"] = true
+	"models/player/combine_soldier.mdl",
+	"models/player/combine_super_soldier.mdl",
+	"models/player/police.mdl",
+	"models/player/combine_soldier_prisonguard.mdl"
 }
 
 function GM:PlayerSetModel(ply)
-	local pm = math.random(1,4)
-	return ply:SetModel(pmtable[pm])
+	ply:SetModel(pmtable[math.random(1,4)])
 end
 
 function GM:OnNPCKilled(npc, attacker, inflictor)

@@ -5,7 +5,7 @@ round_status = net.ReadInt(4)
 end)
 
 hook.Add( "HUDPaint", "RoundStatus", function()
-	surface.SetFont( "Default" )
+	surface.SetFont( "DermaLarge" )
 	surface.SetTextColor( 255, 255, 255 )
 	surface.SetTextPos( 128, 128 )
 	surface.DrawText( GetGlobalFloat("Round") )

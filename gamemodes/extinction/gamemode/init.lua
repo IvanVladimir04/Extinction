@@ -109,9 +109,9 @@ hook.Add( "PlayerSay", "!unstuck", function( ply, text, public )
 end)
 -------------------------Entity Removal-------------------------
 function RemoveEnemies()
-for k, v in pairs( ents.FindByClass( "npc_*" ) ) do
-v:Remove()
-end
+	for k, v in pairs( ents.FindByClass( "npc_*" ) ) do
+		v:Remove()
+	end
 end
 
 
@@ -122,12 +122,9 @@ end
 hook.Add( "PlayerSay", "!endwave", function( ply, text, public )
 if ( string.lower( text ) == "!endwave" ) then
     PrintMessage(HUD_PRINTTALK, "The wave has ended!")
-    ply:IsAdmin()
-    endRoundzw()
-	endRoundaw()
 	RemoveEnemies()
-      end
-   end)
+    end
+end)
 
    
     hook.Add( "PlayerSay", "!npcstuck", function( ply, text, public )
@@ -136,23 +133,20 @@ if ( string.lower( text ) == "!npcstuck" ) then
 RemoveEnemies()
 end
 end)
--------------------------Zombie Wave-----------------------------
-hook.Add( "PlayerSay", "!zombiewave", function( ply, text, public )
-	if ( string.lower( text ) == "!zombiewave" ) then
-	    PrintMessage(HUD_PRINTTALK, "The combine releases headcrabs...")
+
+CreateConVar( "extinction_startmesg", "The combine releases headcrabs...", FCVAR_ARCHIVE, "Put the phrase you want to show up when starting a round" )
+CreateConVar( "extinction_starsnd", "npc/antlion_guard/angry1.wav", FCVAR_ARCHIVE, "Put the sound you want to play when starting a round" )
+
+for i = 1, 7 do
+	CreateConVar( "extinction_ent"..i.."", "npc_vj_extinction_zombie", FCVAR_ARCHIVE, "put the class of an entity" )
+end
+
+hook.Add( "PlayerSay", "!startwave", function( ply, text, public )
+	if ( string.lower( text ) == "!startwave" ) then
+	    PrintMessage(HUD_PRINTTALK, GetConVar("extinction_startmesg"):GetString())
 		ply:IsAdmin()
-		sound.Play("npc/fast_zombie/fz_alert_far1.wav", Vector(-1873.488159, -1276.588623, -63.968750))
+		sound.Play(GetConVar("extinction_starsnd"):GetString(), Vector(-1873.488159, -1276.588623, -63.968750))
 		beginRoundzw()
-		return ""
-	end
-end)
--------------------------Antlion Wave-----------------------------
-hook.Add( "PlayerSay", "!antlionwave", function( ply, text, public )
-	if ( string.lower( text ) == "!antlionwave" ) then
-	    PrintMessage(HUD_PRINTTALK, "Antlions start to swarm...")
-		ply:IsAdmin()
-		sound.Play("npc/antlion_guard/angry1.wav", Vector(-1873.488159, -1276.588623, -63.968750))
-		beginRoundaw()
 		return ""
 	end
 end)

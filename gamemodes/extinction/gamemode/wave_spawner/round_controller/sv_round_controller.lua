@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------
----------------------------------Zombie Wave-------------------------------------------------------------------
+---------------------------------Wave-------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------
 
@@ -60,34 +60,32 @@ end
 
 util.AddNetworkString("UpdateRoundStatus") 
 
-function beginRoundzw()
-	Zombie = true
+function beginRound()
 	round_status = 1
-	updateClientRoundStatuszw()
+	updateClientRoundStatus()
 	isSpawning = true
 end
 
-function endRoundzw()
-	Zombie = false
+function endRound()
 	round_status = 0
-	updateClientRoundStatuszw()
+	updateClientRoundStatus()
 end
 
-function getRoundStatuszw()
+function getRoundStatus()
 return round_status
 end
 
-function updateClientRoundStatuszw()
-net.Start("UpdateRoundStatus")
-net.WriteInt(round_status, 4)
-net.Broadcast()
+function updateClientRoundStatus()
+	net.Start("UpdateRoundStatus")
+	net.WriteInt(round_status, 4)
+	net.Broadcast()
 end
 
 local nextWaveWaiting = false
 
-hook.Add("Think", "WaveThink1", function ()
+hook.Add("Think", "WaveThink", function ()
 
-if round_status == 1 and isSpawning == true and Zombie == true then
+if round_status == 1 and isSpawning == true then
 
          nextWaveWaiting = false
 
@@ -95,38 +93,13 @@ if round_status == 1 and isSpawning == true and Zombie == true then
 		 
 	          t = CurTime() + interval
 			  
-			  local temp = ents.Create("npc_vj_extinction_zombie")
-			  local temp2 = ents.Create("npc_vj_extinction_zombie_fast")
-			  local temp3 = ents.Create("npc_vj_extinction_zombie_poison")
-			  local temp4 = ents.Create("npc_vj_extinction_headcrab")
-			  local temp5 = ents.Create("npc_vj_extinction_headcrab_black")
-			  local temp6 = ents.Create("npc_vj_extinction_headcrab_black")
-			  temp:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp:Spawn()
-			  temp:SetEnemy(table.Random(player.GetAll()))
-			  temp:SetHealth(10 * activeRound)
-			  temp2:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp2:Spawn()
-			  temp2:SetEnemy(table.Random(player.GetAll()))
-			  temp2:SetHealth(10 * activeRound)
-			  temp3:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp3:Spawn()
-			  temp3:SetEnemy(table.Random(player.GetAll()))
-			  temp3:SetHealth(10 * activeRound)
-			  temp4:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp4:Spawn()
-			  temp4:SetEnemy(table.Random(player.GetAll()))
-			  temp4:SetHealth(10 * activeRound)
-			  temp5:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp5:Spawn()
-			  temp5:SetEnemy(table.Random(player.GetAll()))
-			  temp5:SetHealth(10 * activeRound)
-			  temp6:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp6:Spawn()
-			  temp6:SetEnemy(table.Random(player.GetAll()))
-			  temp6:SetHealth(10 * activeRound)
-			  
-		
+			  for i = 1, 7 do
+				local temp = ents.Create(GetConVar("extinction_ent"..i..""):GetString())
+				temp:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
+				temp:Spawn()
+				temp:SetEnemy(table.Random(player.GetAll()))
+				temp:SetHealth(10 * activeRound)
+			  end
 			 		  
               NPCCount =  NPCCount - 2
 			  
@@ -161,109 +134,3 @@ if round_status == 1 and isSpawning == true and Zombie == true then
    end
 
 end)
-
----------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
----------------------------------Antlion Wave------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
-
-
-function beginRoundaw()
-Antlion = true
-round_status = 1
-updateClientRoundStatusaw()
-isSpawning = true
-end
-
-function endRoundaw()
-Antlion = false
-round_status = 0
-updateClientRoundStatusaw()
-end
-
-function getRoundStatusaw()
-return round_status
-end
-
-
-hook.Add("Think", "WaveThink2", function ()
-
-	if round_status == 1 and isSpawning == true and Antlion == true then
-
-         nextWaveWaiting = false
-
-         if t < CurTime() then
-		 
-	          t = CurTime() + interval
-			  
-			  local temp = ents.Create("npc_vj_extinction_antlion")
-			  local temp2 = ents.Create("npc_vj_extinction_antlion")
-			  local temp3 = ents.Create("npc_vj_extinction_antlion")
-			  local temp4 = ents.Create("npc_vj_extinction_antlion")
-			  local temp5 = ents.Create("npc_vj_extinction_antlion")
-			  local temp6 = ents.Create("npc_vj_extinction_antlion")
-			  temp:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp:Spawn()
-			  temp:SetEnemy(table.Random(player.GetAll()))
-			  temp:SetHealth(10 * activeRound)
-			  temp2:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp2:Spawn()
-			  temp2:SetEnemy(table.Random(player.GetAll()))
-			  temp2:SetHealth(10 * activeRound)
-			  temp3:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp3:Spawn()
-			  temp3:SetEnemy(table.Random(player.GetAll()))
-			  temp3:SetHealth(10 * activeRound)
-			  temp4:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp4:Spawn()
-			  temp4:SetEnemy(table.Random(player.GetAll()))
-			  temp4:SetHealth(10 * activeRound)
-			  temp5:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp5:Spawn()
-			  temp5:SetEnemy(table.Random(player.GetAll()))
-			  temp5:SetHealth(10 * activeRound)
-			  temp6:SetPos(spawnPos[math.random(1, table.Count(spawnPos))])
-			  temp6:Spawn()
-			  temp6:SetEnemy(table.Random(player.GetAll()))
-			  temp6:SetHealth(10 * activeRound)
-			 
-			  
-			 
-			  NPCCount =  NPCCount - 2
-			  
-			  if NPCCount <= 0 then
-			  
-			        isSpawning = false
-							
-		 end
-     
-       end
-
-     end
-   
-   if round_status == 1 and isSpawning == false and table.Count(ents.FindByClass("npc_*")) == 0 and nextWaveWaiting == false then
-   
-      activeRound = activeRound + 1
-	  
-	  SetGlobalFloat( "Round", activeRound )
-	 
-	  nextWaveWaiting = true
-	  
-	  timer.Simple(10,function()
-	  
-	  NPCCount = 2 * activeRound 
-	  getBestSpawn()
-	  isSpawning = true
-	  
-	  end)
-   
-   end
-
-end)
-
-function updateClientRoundStatusaw()
-	net.Start("UpdateRoundStatus")
-	net.WriteInt(round_status, 4)
-	net.Broadcast()
-end

@@ -1,6 +1,6 @@
-local round_status = 0 -- Zombie Wave
+local round_status = 0
 
-net.Receive("UpdateRoundStatus", function(len) -- Zombie Wave
+net.Receive("UpdateRoundStatus", function(len)
 round_status = net.ReadInt(4)
 end)
 
@@ -11,7 +11,7 @@ hook.Add( "HUDPaint", "RoundStatus", function()
 	surface.DrawText( GetGlobalFloat("Round") )
 end )
 
-function getRoundStatuszw() -- Zombie Wave
+function getRoundStatus() -- Zombie Wave
 return round_status
 end
 

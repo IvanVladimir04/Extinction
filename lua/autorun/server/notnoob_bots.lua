@@ -112,7 +112,7 @@ concommand.Add( "test_astar", function( ply )
 	PrintTable( path ) -- Print the generated path to console for debugging
 	drawThePath( path ) -- Draw the generated path for 9 seconds
 
-end )
+end ) 
 
 local allies = {
 [CLASS_PLAYER_ALLY] = true,

@@ -114,7 +114,7 @@ function RemoveEnemies()
 	end
 end
 
-EntList = {}
+EntList = {} 
 
 local function CreateSomeTimers()
 timer.Create( "RemoveEntities", 0.1, 0, RemoveEnemies() )

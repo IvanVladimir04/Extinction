@@ -7,6 +7,8 @@ ENT.Purpose 		= "Spawn it and fight with it!"
 ENT.Instructions 	= "Click on the spawnicon to spawn it."
 ENT.Category		= "A"
 
+--Help
+
 if (CLIENT) then
 	local Name = "Headcrab"
 	local LangName = "npc_vj_extinction_headcrab"

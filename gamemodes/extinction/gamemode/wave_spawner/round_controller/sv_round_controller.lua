@@ -62,12 +62,14 @@ util.AddNetworkString("UpdateRoundStatus")
 
 function beginRound()
 	round_status = 1
+	SetGlobalFloat( "Round", activeRound )
 	updateClientRoundStatus()
 	isSpawning = true
 end
 
 function endRound()
 	round_status = 0
+	SetGlobalFloat( "Round", activeRound )
 	updateClientRoundStatus()
 end
 

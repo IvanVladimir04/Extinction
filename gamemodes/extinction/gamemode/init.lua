@@ -146,7 +146,7 @@ hook.Add( "PlayerSay", "!startwave", function( ply, text, public )
 	    PrintMessage(HUD_PRINTTALK, GetConVar("extinction_startmesg"):GetString())
 		ply:IsAdmin()
 		sound.Play(GetConVar("extinction_starsnd"):GetString(), Vector(-1873.488159, -1276.588623, -63.968750))
-		beginRoundzw()
+		beginRound()
 		return ""
 	end
 end)

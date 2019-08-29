@@ -114,8 +114,6 @@ concommand.Add( "test_astar", function( ply )
 
 end )
 
-EntList = {}
-
 local allies = {
 [CLASS_PLAYER_ALLY] = true,
 [CLASS_PLAYER_ALLY_VITAL]= true

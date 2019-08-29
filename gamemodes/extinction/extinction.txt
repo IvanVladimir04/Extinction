@@ -1,0 +1,10 @@
+"Gamemode"
+{
+        "base" "base"
+		"title" "Extinction"
+		"maps"  "^ex_"
+		"menusystem" "1"
+		
+		"Settings"
+		
+}

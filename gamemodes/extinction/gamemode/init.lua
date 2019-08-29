@@ -122,6 +122,7 @@ end
 hook.Add( "PlayerSay", "!endwave", function( ply, text, public )
 if ( string.lower( text ) == "!endwave" ) then
     PrintMessage(HUD_PRINTTALK, "The wave has ended!")
+	endRound()
 	RemoveEnemies()
     end
 end)

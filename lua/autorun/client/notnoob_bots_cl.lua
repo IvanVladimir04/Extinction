@@ -1,0 +1,7 @@
+net.Receive("sendToChat",function(len,ply)
+	local msg = net.ReadString()
+	local bot = net.ReadEntity(1)
+	chat.AddText( team.GetColor(bot:Team()) ,bot,Color(255,255,255,255),": "..msg)
+	print(msg)
+	print("Input Recieved!")
+end)

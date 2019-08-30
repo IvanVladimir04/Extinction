@@ -112,9 +112,7 @@ function RemoveEnemies()
 	for k, v in pairs( ents.FindByClass( "npc_*" ) ) do
 		v:Remove()
 	end
-end
-
-EntList = {} 
+end 
 
 local function CreateSomeTimers()
 timer.Create( "RemoveEntities", 0.1, 0, RemoveEnemies() )

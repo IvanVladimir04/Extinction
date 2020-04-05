@@ -36,7 +36,7 @@ function BotAstar( start, goal )
 
 		for k, neighbor in pairs( current:GetAdjacentAreas() ) do
 			local newCostSoFar = current:GetCostSoFar() + heuristic_cost_estimate_bot( current, neighbor )
-			if ( neighbor:IsUnderwater() ) then -- Add your own area filters or whatever here
+			if ( neighbor:IsUnderwater() or math.abs(neighbor:GetCenter().z-current:GetCenter().z) > 64 ) then -- Add your own area filters or whatever here
 				continue
 			end
 
@@ -120,7 +120,7 @@ local allies = {
 }
 
 hook.Add( "OnEntityCreated", "SoftBotEntList", function( ent )
-	if ( ( ( ent:IsPlayer() and GetConVar("bot_attackplayers"):GetInt() == 1 ) or ( ent:IsNPC() and !allies[ent:Classify()] ) or ent.Type == "nextbot") ) then
+	if ( ( ( ent:IsPlayer() and GetConVar("bot_attackplayers"):GetInt() == 1 ) or ( ent:IsNPC() and !allies[ent:Classify()] ) ) ) then
 		EntList[ ent:EntIndex() ] = ent
 	end
 end )
@@ -149,36 +149,30 @@ function mystart(ply,cmd)
 	cmd:SetForwardMove(1000)
 
 		ply:SetWalkSpeed(1)
-		timer.Simple(0.5, function()
-			if IsValid(ply) then
-				ply:Give(GetConVar( "bot_weapon" ):GetString())
-				ply:SelectWeapon(GetConVar( "bot_weapon" ):GetString())
-				ply:GiveAmmo(9999,ply:GetActiveWeapon():GetPrimaryAmmoType())
-				--ply:GiveAmmo(9999,ply:GetActiveWeapon():GetSecondaryAmmoType())
-			end
-		end)
 		if !IsValid(ply.Enemy) then
-			for index, v in pairs( EntList ) do
-				if v != ply and IsValid(v) then
-					if v:Health() > 0 then
-						ply.Enemy = v
-					end
-				end
+			local stop = false
+			local rand = table.Random(EntList)
+			if IsValid(rand) then
+				ply.Enemy = rand
 			end
 		end
 		if IsValid(ply.Enemy) then
 		local v = ply.Enemy
 			if !ply.NextBotThink then ply.NextBotThink = CurTime()+1 end
 			if ply.NextBotThink < CurTime() then
-				if ply:IsLineOfSightClear(v) and ply:GetPos():DistToSqr( v:GetPos() ) < distance^2 then
+				local dist = ply:GetPos():DistToSqr( v:GetPos() )
+				local los = ply:IsLineOfSightClear(v)
+				if los and dist < distance^2 then
 					ply.Shoot = true
 				else
 					ply.Shoot = false
 				end
-				if ply:GetPos():DistToSqr(v:GetPos()) < GetConVar( "bot_backdistance" ):GetInt()^2 then
-					ply.Path = false
+				if dist < GetConVar( "bot_backdistance" ):GetInt()^2 then
+					ply.Path = 1
+				elseif !los then
+					ply.Path = 2
 				else
-					ply.Path = true
+					ply.Path = false
 				end
 				ply.NextBotThink = CurTime()+1
 			end
@@ -192,14 +186,16 @@ function mystart(ply,cmd)
 					cmd:SetForwardMove(1000)
 					ply:SetWalkSpeed(200)
 				else]]
-				if !ply.Path then
+				if ply.Path == 1 then
 					cmd:SetForwardMove(-1000)
 					ply:SetWalkSpeed(200)
 					cmd:SetButtons(IN_SPEED)
-				else
+				elseif ply.Path == 2 then
 					BotMovePath(ply,cmd,v)
 				end
-				ply:SetWalkSpeed(200)
+				if ply.Path != false then
+					ply:SetWalkSpeed(200)
+				end
 			end
 	end
 end
@@ -249,21 +245,24 @@ function BotMovePath(ply,cmd,v)
 	if ( !IsValid( ply.targetArea ) ) then
 		ply.targetArea = ply.path[ #ply.path ]
 	end
+	--ply.targetArea:Draw()
 	-- The area we selected is invalid or we are already there, remove it, bail and wait for next cycle
 	if ( !IsValid( ply.targetArea ) || ( ply.targetArea == currentArea && ply.targetArea:GetCenter():DistToSqr( ply:GetPos() ) < 64^2 ) ) then
 		table.remove( ply.path ) -- Removes last element
 		ply.targetArea = nil
 		return
 	end
+	--ply.targetArea:Draw()
 	-- We got the target to go to, aim there and MOVE
 	local targetang = ( ply.targetArea:GetCenter() - ply:GetPos() ):GetNormalized():Angle()
 	if #ply.path == 1 then
 		targetang = ( v:GetPos() - ply:GetPos() ):GetNormalized():Angle()
-	else
-		if !ply.targetArea:IsVisible(ply.path[#ply.path-1]:GetCenter()) then
-			cmd:SetButtons(IN_JUMP)
-		end
 	end
+	--else
+		--if !ply.targetArea:IsVisible(ply.path[#ply.path-1]:GetCenter()) then
+			--cmd:SetButtons(IN_JUMP)
+		--end
+	--end
 						
 	cmd:SetViewAngles( targetang )
 	cmd:SetForwardMove( 1000 )
@@ -306,10 +305,10 @@ function spawnRun(ply)
 		CreateConVar( "bot_meddistance", 2500, FCVAR_SERVER_CAN_EXECUTE, "[NOOB BOTS]What distance can bots detect med-kits and enemies?" )
 		CreateConVar( "bot_meleedistance", 2500, FCVAR_SERVER_CAN_EXECUTE, "[NOOB BOTS]What distance can bots detect med-kits and enemies?" )
 		-- timer.Simple(0.1,function() ply:SetModel("models/player/"..sm[math.random(1,#sm)]) end )
-		local model = table.Random( player_manager.AllValidModels())
+		--[[local model = table.Random( player_manager.AllValidModels())
 		timer.Simple(0.1,function()
 			ply:SetModel( model )
-		end)
+		end)]]
 		timer.Simple(0.1,function() ply:SetPlayerColor(colors[crdm]) end)
 		--print(colors[crdm])
 		
@@ -321,6 +320,15 @@ function spawnRun(ply)
 		
 		
 		botSaySomething(ply,"spawn",30)
+		
+		timer.Simple(0.5, function()
+			if IsValid(ply) then
+				ply:Give(GetConVar( "bot_weapon" ):GetString())
+				ply:SelectWeapon(GetConVar( "bot_weapon" ):GetString())
+				ply:GiveAmmo(99999,ply:GetActiveWeapon():GetPrimaryAmmoType())
+				--ply:GiveAmmo(9999,ply:GetActiveWeapon():GetSecondaryAmmoType())
+			end
+		end)
 	
 	end
 end
